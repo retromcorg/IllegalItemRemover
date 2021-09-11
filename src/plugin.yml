@@ -1,0 +1,4 @@
+name: IllegalItemRemover
+main: com.johnymuffin.beta.illegalitemremover.IllegalItemFinder
+author: JohnyMuffin
+version: 1.0.0
