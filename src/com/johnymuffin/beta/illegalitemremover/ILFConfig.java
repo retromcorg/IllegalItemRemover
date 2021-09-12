@@ -37,7 +37,7 @@ public class ILFConfig extends Configuration {
     public List<Object> getBannedItems() {
         String key = "bannedItems";
         if(this.getList(key) == null) {
-            List<String> defaultItems = Arrays.asList("36", "44:4", "44:5", "44:6", "44:7", "44:8", "44:9", "44:10");
+            List<String> defaultItems = Arrays.asList("36", "44:4:>=");
             this.setProperty(key, defaultItems);
             defaultItems = null;
         }

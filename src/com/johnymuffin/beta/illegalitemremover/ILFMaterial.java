@@ -7,6 +7,8 @@ public class ILFMaterial {
     private final int damageValue;
     private final boolean compareDamage;
 
+    private final boolean removeHigher;
+
     public int getItemID() {
         return itemID;
     }
@@ -19,14 +21,16 @@ public class ILFMaterial {
         return compareDamage;
     }
 
-    public ILFMaterial(int itemID, int damageValue, boolean compareDamage) {
+    public ILFMaterial(int itemID, int damageValue, boolean compareDamage, boolean removeHigher) {
         this.itemID = itemID;
         this.damageValue = damageValue;
         this.compareDamage = compareDamage;
+        this.removeHigher = removeHigher;
     }
 
     public ILFMaterial(ItemStack itemStack) {
         this.itemID = itemStack.getTypeId();
+        this.removeHigher = false; //This can't be determined by Item Stack alone.
         if (itemStack.getData() != null) {
             this.damageValue = itemStack.getData().getData();
             compareDamage = true;
@@ -43,8 +47,15 @@ public class ILFMaterial {
             if (!compareDamage) {
                 return true;
             }
-            if (itemStack.getData() != null && itemStack.getData().getData() == damageValue) {
-                return true;
+            if (itemStack.getData() != null) {
+                if (itemStack.getData().getData() == damageValue) {
+                    return true;
+                }
+                if (removeHigher && itemStack.getData().getData() >= damageValue) {
+                    return true;
+                }
+
+
             }
         }
         return false;
