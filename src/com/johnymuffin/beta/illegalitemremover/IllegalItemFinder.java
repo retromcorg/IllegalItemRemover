@@ -140,7 +140,8 @@ public class IllegalItemFinder extends JavaPlugin implements Listener {
                 for (ILFMaterial bannedItem : blockedMaterials) {
                     if (bannedItem.matches(itemStack)) {
                         removedItem(player, itemStack, true);
-                        player.getInventory().remove(itemStack);
+//                        player.getInventory().remove(itemStack);
+                        player.getInventory().setContents(removeItemFromStack(player.getInventory().getContents(), itemStack));
                         removedItem = true;
                     }
                 }
@@ -152,7 +153,8 @@ public class IllegalItemFinder extends JavaPlugin implements Listener {
                 for (ILFMaterial bannedItem : blockedMaterials) {
                     if (bannedItem.matches(itemStack)) {
                         removedItem(player, itemStack, true);
-                        player.getInventory().remove(itemStack);
+//                        player.getInventory().remove(itemStack);
+                        player.getInventory().setArmorContents(removeItemFromStack(player.getInventory().getArmorContents(), itemStack));
                         removedItem = true;
                     }
                 }
@@ -177,6 +179,42 @@ public class IllegalItemFinder extends JavaPlugin implements Listener {
             logger(Level.WARNING, "An exception occurred when sending a message to Discord.");
             exception.printStackTrace();
         }
+    }
+
+
+    //This is a really shit method. This has been made as Beta bukkit doesn't comare damage values when using the inbuilt functions to remove items of a certain type from the inventory.
+    public ItemStack[] removeItemFromStack(ItemStack[] itemStacks, ItemStack remove) {
+        ItemStack[] newItemStack = new ItemStack[itemStacks.length];
+        int counter = 0;
+        for (ItemStack item : itemStacks) {
+            if (item == null) {
+                newItemStack[counter] = null;
+                counter = counter + 1;
+                continue;
+            }
+            boolean identicalItem = false;
+            if (item.getTypeId() == remove.getTypeId() && item.getAmount() == remove.getAmount() && item.getDurability() == remove.getDurability()) {
+                boolean hasMeta1 = item.getData() != null;
+                boolean hasMeta2 = remove.getData() != null;
+                if (hasMeta1 == hasMeta2) {
+                    if (hasMeta1) {
+                        if (item.getData().getData() == remove.getData().getData()) {
+                            identicalItem = true;
+                        }
+                    } else {
+                        identicalItem = true;
+                    }
+                }
+            }
+            if (identicalItem) {
+                newItemStack[counter] = new ItemStack(Material.AIR);
+            } else {
+                newItemStack[counter] = item;
+            }
+            counter = counter + 1;
+        }
+        return newItemStack;
+
     }
 
     //Events
@@ -226,7 +264,6 @@ public class IllegalItemFinder extends JavaPlugin implements Listener {
         if (illegalItem) {
             event.setCancelled(true);
         }
-
 
     }
 }
